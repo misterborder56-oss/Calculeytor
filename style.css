@@ -1,243 +1,207 @@
-
-/* =========================
+/* =====================
    VARIABLES Y TEMAS
-========================= */
+===================== */
 :root {
-  --bg: #0b0b0b;
-  --panel: #0b0b0b;
-  --btn-num: #3a3a3a;
-  --btn-op: #0e4f7c;
-  --btn-fn: #0e4f7c;
-  --btn-ac: #0a3f91;
-  --btn-eq: #6ddf8f;
-  --txt: #ffffff;
-  --subtxt: #9ca3af;
-  --radius: 18px;
+  --bg: #111;
+  --calc-bg: rgba(0,0,0,0.3);
+  --screen-bg: rgba(0,0,0,0.4);
+  --btn-bg: #222;
+  --btn-bg-op: #333;
+  --btn-text: #fff;
+  --accent: #4caf50;
 }
 
-/* Tema claro */
-body.light {
-  --bg: #f3f4f6;
-  --panel: #ffffff;
-  --btn-num: #e5e7eb;
-  --btn-op: #60a5fa;
-  --btn-fn: #60a5fa;
-  --btn-ac: #2563eb;
-  --btn-eq: #22c55e;
-  --txt: #020617;
-  --subtxt: #475569;
+/* TEMA OSCURO */
+.theme-dark {
+  --bg: #111;
+  --calc-bg: rgba(0,0,0,0.3);
+  --screen-bg: rgba(0,0,0,0.4);
+  --btn-bg: #222;
+  --btn-bg-op: #333;
+  --btn-text: #fff;
+  --accent: #4caf50;
 }
 
-/* Tema neón */
-body.neon {
-  --bg: #05010d;
-  --panel: #0f172a;
-  --btn-num: #1f2933;
-  --btn-op: #9333ea;
-  --btn-fn: #ec4899;
-  --btn-ac: #7c3aed;
-  --btn-eq: #22d3ee;
-  --txt: #f8fafc;
-  --subtxt: #a78bfa;
+/* TEMA CLARO */
+.theme-light {
+  --bg: #f2f2f2;
+  --calc-bg: #ffffff;
+  --screen-bg: #e6e6e6;
+  --btn-bg: #dddddd;
+  --btn-bg-op: #cccccc;
+  --btn-text: #000;
+  --accent: #2196f3;
 }
 
-/* =========================
-   BASE
-========================= */
+/* TEMA AZUL */
+.theme-blue {
+  --bg: #0a1a2a;
+  --calc-bg: #0f2b46;
+  --screen-bg: #14395a;
+  --btn-bg: #1d4f7a;
+  --btn-bg-op: #256799;
+  --btn-text: #fff;
+  --accent: #00bcd4;
+}
+
+/* =====================
+   RESET GENERAL
+===================== */
 * {
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
   background: var(--bg);
-  color: var(--txt);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  transition: background 0.4s ease;
+  transition: background 0.3s ease;
 }
 
-/* =========================
-   CALCULADORA
-========================= */
+/* =====================
+   CONTENEDOR
+===================== */
 .calculator {
   width: 100%;
-  max-width: 420px;
-  background: var(--panel);
-  padding: 16px;
-  border-radius: 28px;
+  max-width: 380px;
+  padding: 14px;
+  background: var(--calc-bg);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-/* =========================
-   TOP / TEMAS
-========================= */
-.top {
+/* =====================
+   HEADER
+===================== */
+header {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-select {
-  background: transparent;
-  color: var(--subtxt);
+header select,
+header button {
+  background: var(--btn-bg);
+  color: var(--btn-text);
   border: none;
-  font-size: 0.85rem;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-/* =========================
+/* =====================
+   PANTALLA
+===================== */
+.screen {
+  background: var(--screen-bg);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+#preview {
+  font-size: 14px;
+  opacity: 0.6;
+  color: var(--btn-text);
+}
+
+#display {
+  font-size: 30px;
+  color: var(--btn-text);
+  word-wrap: break-word;
+}
+
+/* =====================
+   BOTONES
+===================== */
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+button {
+  padding: 14px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.buttons button:nth-child(4n),
+.buttons button:last-child {
+  background: var(--btn-bg-op);
+}
+
+/* =====================
+   MODO CIENTÍFICO
+===================== */
+.scientific {
+  display: none;
+  margin-top: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.scientific.show {
+  display: grid;
+}
+
+/* =====================
    HISTORIAL
-========================= */
+===================== */
 .history {
-  max-height: 90px;
-  overflow-y: auto;
-  font-size: 0.8rem;
-  color: var(--subtxt);
-  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.history h3 {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  color: var(--btn-text);
 }
 
 .history-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2px 0;
+  background: rgba(255,255,255,0.08);
+  padding: 6px 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
 }
 
-.history-row button {
-  background: none;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
+.history-row span {
+  font-size: 13px;
+  color: var(--btn-text);
 }
 
-/* =========================
-   DISPLAY
-========================= */
-.display {
-  text-align: right;
-  margin-bottom: 10px;
-}
-
-#preview {
-  font-size: 0.95rem;
-  color: var(--btn-eq);
-  min-height: 20px;
-}
-
-#display {
-  font-size: 2.6rem;
-  font-weight: 500;
-  word-wrap: break-word;
-}
-
-/* =========================
-   BOTÓN MODO CIENTÍFICO
-========================= */
-.toggle {
-  width: 100%;
+.history-delete {
   background: transparent;
   border: none;
-  color: var(--subtxt);
-  padding: 6px 0 10px;
-  font-size: 0.9rem;
+  color: #ff5252;
+  font-size: 16px;
   cursor: pointer;
 }
 
-/* =========================
-   PANEL CIENTÍFICO
-========================= */
-.scientific {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-12px);
-  transition: all 0.35s ease;
-}
-
-.scientific.show {
-  max-height: 320px;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* =========================
-   TECLADO PRINCIPAL
-========================= */
-.buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 10px;
-}
-
-/* =========================
-   BOTONES
-========================= */
-button {
-  height: 62px;
-  border-radius: var(--radius);
-  border: none;
-  font-size: 1.25rem;
-  color: var(--txt);
-  cursor: pointer;
-  transition: transform 0.12s ease, filter 0.12s ease;
-}
-
-/* Animación presión */
-button:active {
-  transform: scale(0.92);
-  filter: brightness(1.15);
-}
-
-/* Tipos */
-.buttons button {
-  background: var(--btn-num);
-}
-
-.scientific button {
-  background: var(--btn-fn);
-  font-size: 1.05rem;
-}
-
-.buttons button:nth-child(1) {
-  background: var(--btn-ac);
-}
-
-.buttons button:nth-child(4),
-.buttons button:nth-child(8),
-.buttons button:nth-child(12),
-.buttons button:nth-child(16) {
-  background: var(--btn-op);
-}
-
-.equals {
-  background: var(--btn-eq) !important;
-  color: #04210f;
-}
-
-/* =========================
-   SCROLLBAR (ANDROID-LIKE)
-========================= */
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--btn-op);
-  border-radius: 10px;
-}
-
-/* =========================
+/* =====================
    RESPONSIVE
-========================= */
+===================== */
 @media (min-width: 768px) {
   .calculator {
-    max-width: 480px;
+    max-width: 420px;
   }
-}
+   }
