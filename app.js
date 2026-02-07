@@ -12,10 +12,7 @@ var history = [];
   } catch(e){ history=[]; }
 })();
 
-// PANTALLA
 function screen(){ return document.getElementById("screen"); }
-
-// ACTUALIZAR HISTORIAL
 function updateHistoryUI(){
   var list = document.getElementById("historyList");
   if(!list) return;
@@ -29,12 +26,10 @@ function updateHistoryUI(){
 }
 updateHistoryUI();
 
-// BOTONES
 function add(v){ exp+=v; screen().value=exp; }
 function clearAll(){ exp=""; screen().value=""; }
 function del(){ exp=exp.slice(0,-1); screen().value=exp; }
 
-// PARSEAR EXPRESIÓN
 function parseExpression(e){
   e = e.replace(/×/g,"*").replace(/÷/g,"/");
   e = e.replace(/(\d+(?:\.\d+)?)%(\d+(?:\.\d+)?)/g,function(_,a,b){
@@ -42,10 +37,8 @@ function parseExpression(e){
   });
   return e;
 }
-
 function isValidExpression(e){ return !/[+\-*/%]$/.test(e); }
 
-// CALCULAR
 function calc(){
   if(!exp || !isValidExpression(exp)) return;
   try{
@@ -60,10 +53,7 @@ function calc(){
   } catch(e){ screen().value="Error"; exp=""; }
 }
 
-// HISTORIAL
 function clearHistory(){ history=[]; localStorage.removeItem("calcHistory"); updateHistoryUI(); }
-
-// MODO CIENTÍFICO
 function sci(type){
   if(!exp) return;
   var v = Number(exp), r;
@@ -76,9 +66,7 @@ function sci(type){
   exp=String(r); screen().value=exp;
 }
 function toggleSci(){ document.getElementById("scientific").classList.toggle("hidden"); }
-
-// TEMAS
 function applyTheme(){
   var value = document.getElementById("themeSelect").value;
   document.body.className = value;
-}
+    }
