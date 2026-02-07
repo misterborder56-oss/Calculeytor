@@ -1,0 +1,243 @@
+
+/* =========================
+   VARIABLES Y TEMAS
+========================= */
+:root {
+  --bg: #0b0b0b;
+  --panel: #0b0b0b;
+  --btn-num: #3a3a3a;
+  --btn-op: #0e4f7c;
+  --btn-fn: #0e4f7c;
+  --btn-ac: #0a3f91;
+  --btn-eq: #6ddf8f;
+  --txt: #ffffff;
+  --subtxt: #9ca3af;
+  --radius: 18px;
+}
+
+/* Tema claro */
+body.light {
+  --bg: #f3f4f6;
+  --panel: #ffffff;
+  --btn-num: #e5e7eb;
+  --btn-op: #60a5fa;
+  --btn-fn: #60a5fa;
+  --btn-ac: #2563eb;
+  --btn-eq: #22c55e;
+  --txt: #020617;
+  --subtxt: #475569;
+}
+
+/* Tema neón */
+body.neon {
+  --bg: #05010d;
+  --panel: #0f172a;
+  --btn-num: #1f2933;
+  --btn-op: #9333ea;
+  --btn-fn: #ec4899;
+  --btn-ac: #7c3aed;
+  --btn-eq: #22d3ee;
+  --txt: #f8fafc;
+  --subtxt: #a78bfa;
+}
+
+/* =========================
+   BASE
+========================= */
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--txt);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  transition: background 0.4s ease;
+}
+
+/* =========================
+   CALCULADORA
+========================= */
+.calculator {
+  width: 100%;
+  max-width: 420px;
+  background: var(--panel);
+  padding: 16px;
+  border-radius: 28px;
+}
+
+/* =========================
+   TOP / TEMAS
+========================= */
+.top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+select {
+  background: transparent;
+  color: var(--subtxt);
+  border: none;
+  font-size: 0.85rem;
+}
+
+/* =========================
+   HISTORIAL
+========================= */
+.history {
+  max-height: 90px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  color: var(--subtxt);
+  margin-bottom: 6px;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.history-row button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+}
+
+/* =========================
+   DISPLAY
+========================= */
+.display {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+#preview {
+  font-size: 0.95rem;
+  color: var(--btn-eq);
+  min-height: 20px;
+}
+
+#display {
+  font-size: 2.6rem;
+  font-weight: 500;
+  word-wrap: break-word;
+}
+
+/* =========================
+   BOTÓN MODO CIENTÍFICO
+========================= */
+.toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--subtxt);
+  padding: 6px 0 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* =========================
+   PANEL CIENTÍFICO
+========================= */
+.scientific {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: all 0.35s ease;
+}
+
+.scientific.show {
+  max-height: 320px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================
+   TECLADO PRINCIPAL
+========================= */
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* =========================
+   BOTONES
+========================= */
+button {
+  height: 62px;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 1.25rem;
+  color: var(--txt);
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+/* Animación presión */
+button:active {
+  transform: scale(0.92);
+  filter: brightness(1.15);
+}
+
+/* Tipos */
+.buttons button {
+  background: var(--btn-num);
+}
+
+.scientific button {
+  background: var(--btn-fn);
+  font-size: 1.05rem;
+}
+
+.buttons button:nth-child(1) {
+  background: var(--btn-ac);
+}
+
+.buttons button:nth-child(4),
+.buttons button:nth-child(8),
+.buttons button:nth-child(12),
+.buttons button:nth-child(16) {
+  background: var(--btn-op);
+}
+
+.equals {
+  background: var(--btn-eq) !important;
+  color: #04210f;
+}
+
+/* =========================
+   SCROLLBAR (ANDROID-LIKE)
+========================= */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--btn-op);
+  border-radius: 10px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (min-width: 768px) {
+  .calculator {
+    max-width: 480px;
+  }
+}
