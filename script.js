@@ -1,120 +1,202 @@
-const display = document.getElementById("display");
-const preview = document.getElementById("preview");
-const historyDiv = document.getElementById("history");
-const scientific = document.getElementById("scientific");
-const toggleSci = document.getElementById("toggleSci");
-const themeSelect = document.getElementById("themeSelect");
-
-let expr = "";
-let history = JSON.parse(localStorage.getItem("history")) || [];
-
-/* MODO CIENTÍFICO */
-toggleSci.onclick = () => {
-  scientific.classList.toggle("show");
-};
-
-/* TEMAS */
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme) {
-  document.body.className = savedTheme;
-  themeSelect.value = savedTheme;
+/* RESET */
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
-themeSelect.onchange = () => {
-  document.body.className = themeSelect.value;
-  localStorage.setItem("theme", themeSelect.value);
-};
-
-/* HISTORIAL */
-function renderHistory() {
-  historyDiv.innerHTML = "";
-  history.forEach((item, i) => {
-    const row = document.createElement("div");
-    row.className = "history-row";
-    row.innerHTML = `<span>${item}</span><button class="history-delete">✖</button>`;
-    row.querySelector("button").onclick = () => {
-      history.splice(i, 1);
-      saveHistory();
-    };
-    historyDiv.appendChild(row);
-  });
-}
-function saveHistory() {
-  localStorage.setItem("history", JSON.stringify(history));
-  renderHistory();
-}
-renderHistory();
-
-/* BOTONES */
-document.querySelectorAll(".buttons button, .scientific button")
-  .forEach(btn => btn.onclick = () => handle(btn.textContent));
-
-function handle(val) {
-  if (val === "AC") return reset();
-  if (val === "⌫") return back();
-  if (val === "=") return calculate();
-  if (val === "%") return addPercent();
-
-  if (val === "π") expr += Math.PI;
-  else if (val === "e") expr += Math.E;
-  else if (["sin","cos","tan","log","ln"].includes(val)) expr += val + "(";
-  else if (val === "√") expr += "sqrt(";
-  else expr += val;
-
-  update();
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s;
 }
 
-function reset() {
-  expr = "";
-  display.textContent = "0";
-  preview.textContent = "";
+/* =====================
+   TEMAS (DIRECTOS)
+===================== */
+body.theme-dark {
+  background: #111;
 }
 
-function back() {
-  expr = expr.slice(0,-1);
-  update();
+body.theme-light {
+  background: #f2f2f2;
 }
 
-function addPercent() {
-  if (!expr.endsWith("%")) expr += "%";
-  update();
+body.theme-blue {
+  background: #0a1a2a;
 }
 
-function update() {
-  display.textContent = expr || "0";
-  try {
-    preview.textContent = "= " + evaluate(expr);
-  } catch {
-    preview.textContent = "";
-  }
+/* =====================
+   CALCULADORA
+===================== */
+.calculator {
+  width: 100%;
+  max-width: 380px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #222;
+  color: white;
 }
 
-function calculate() {
-  try {
-    const res = evaluate(expr);
-    history.push(`${expr} = ${res}`);
-    saveHistory();
-    expr = res.toString();
-    update();
-    preview.textContent = "";
-  } catch {
-    display.textContent = "Error";
-  }
+body.theme-light .calculator {
+  background: #ffffff;
+  color: black;
 }
 
-function evaluate(e) {
-  e = e.replace(/(\d+\.?\d*)\s*%\s*(\d+\.?\d*)/g, "($1/100)*$2");
-  e = e.replace(/(\d+\.?\d*)%/g, "($1/100)");
+body.theme-blue .calculator {
+  background: #0f2b46;
+  color: white;
+}
 
-  return Function("return " +
-    e.replace(/×/g,"*")
-     .replace(/÷/g,"/")
-     .replace(/−/g,"-")
-     .replace(/sqrt/g,"Math.sqrt")
-     .replace(/sin/g,"Math.sin")
-     .replace(/cos/g,"Math.cos")
-     .replace(/tan/g,"Math.tan")
-     .replace(/ln/g,"Math.log")
-     .replace(/log/g,"Math.log10")
-  )();
+/* =====================
+   HEADER
+===================== */
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+header select,
+header button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+body.theme-dark header select,
+body.theme-dark header button {
+  background: #333;
+  color: white;
+}
+
+body.theme-light header select,
+body.theme-light header button {
+  background: #ddd;
+  color: black;
+}
+
+body.theme-blue header select,
+body.theme-blue header button {
+  background: #1d4f7a;
+  color: white;
+}
+
+/* =====================
+   PANTALLA
+===================== */
+.screen {
+  border-radius: 10px;
+  padding: 10px;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+body.theme-dark .screen {
+  background: #000;
+}
+
+body.theme-light .screen {
+  background: #e6e6e6;
+}
+
+body.theme-blue .screen {
+  background: #14395a;
+}
+
+#preview {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+#display {
+  font-size: 28px;
+}
+
+/* =====================
+   BOTONES
+===================== */
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+button {
+  padding: 14px;
+  font-size: 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+body.theme-dark button {
+  background: #333;
+  color: white;
+}
+
+body.theme-light button {
+  background: #ddd;
+  color: black;
+}
+
+body.theme-blue button {
+  background: #1d4f7a;
+  color: white;
+}
+
+/* =====================
+   MODO CIENTÍFICO
+===================== */
+.scientific {
+  display: none;
+  margin-top: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.scientific.show {
+  display: grid;
+}
+
+/* =====================
+   HISTORIAL
+===================== */
+.history {
+  margin-top: 10px;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+
+body.theme-dark .history-row {
+  background: rgba(255,255,255,0.08);
+}
+
+body.theme-light .history-row {
+  background: #e0e0e0;
+}
+
+body.theme-blue .history-row {
+  background: rgba(255,255,255,0.1);
+}
+
+.history-delete {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
 }
