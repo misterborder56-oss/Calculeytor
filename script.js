@@ -3,6 +3,7 @@ const preview = document.getElementById("preview");
 const historyDiv = document.getElementById("history");
 const scientific = document.getElementById("scientific");
 const toggleSci = document.getElementById("toggleSci");
+const themeSelect = document.getElementById("themeSelect");
 
 let expr = "";
 let sciOpen = false;
@@ -11,11 +12,25 @@ let history = JSON.parse(localStorage.getItem("history")) || [];
 /* ======================
    MODO CIENTÍFICO
 ====================== */
-toggleSci.onclick = () => {
+toggleSci.addEventListener("click", () => {
   sciOpen = !sciOpen;
   scientific.classList.toggle("show", sciOpen);
-  toggleSci.textContent = sciOpen ? "❌" : "🔬";
-};
+});
+
+/* ======================
+   TEMAS (FIX DEFINITIVO)
+====================== */
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) {
+  document.body.className = savedTheme;
+  themeSelect.value = savedTheme;
+}
+
+themeSelect.addEventListener("change", () => {
+  document.body.className = themeSelect.value;
+  localStorage.setItem("theme", themeSelect.value);
+});
+
 /* ======================
    HISTORIAL
 ====================== */
@@ -33,10 +48,10 @@ function renderHistory() {
     del.textContent = "✖";
     del.className = "history-delete";
 
-    del.onclick = () => {
+    del.addEventListener("click", () => {
       history.splice(index, 1);
       saveHistory();
-    };
+    });
 
     row.appendChild(text);
     row.appendChild(del);
@@ -49,19 +64,11 @@ function saveHistory() {
   renderHistory();
 }
 
-renderHistory()
-
 renderHistory();
 
-function saveHistory() {
-  localStorage.setItem("history", JSON.stringify(history));
-  renderHistory();
-}
-
 /* ======================
-   BOTONES (FIX REAL)
+   BOTONES (SOLO CALCULADORA)
 ====================== */
-// SOLO botones de cálculo
 document
   .querySelectorAll(".buttons button, .scientific button")
   .forEach(btn => {
@@ -134,7 +141,7 @@ function calculate() {
 }
 
 /* ======================
-   PREVIEW
+   PREVIEW EN VIVO
 ====================== */
 function livePreview() {
   try {
@@ -145,17 +152,17 @@ function livePreview() {
 }
 
 /* ======================
-   EVALUADOR
+   EVALUADOR FINAL
 ====================== */
 function evaluate(e) {
 
-  // A % B → (A/100)*B
+  // A % B  → (A/100)*B
   e = e.replace(
     /(\d+\.?\d*)\s*%\s*(\d+\.?\d*)/g,
     "($1/100)*$2"
   );
 
-  // porcentaje simple
+  // porcentaje simple (10%)
   e = e.replace(/(\d+\.?\d*)%/g, "($1/100)");
 
   return Function("return " +
@@ -169,4 +176,4 @@ function evaluate(e) {
      .replace(/ln/g, "Math.log")
      .replace(/log/g, "Math.log10")
   )();
-}
+                           }
