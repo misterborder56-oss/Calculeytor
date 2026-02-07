@@ -6,144 +6,82 @@ const toggleSci = document.getElementById("toggleSci");
 const themeSelect = document.getElementById("themeSelect");
 
 let expr = "";
-let sciOpen = false;
 let history = JSON.parse(localStorage.getItem("history")) || [];
 
-/* ======================
-   MODO CIENTÍFICO
-====================== */
-toggleSci.addEventListener("click", () => {
-  sciOpen = !sciOpen;
-  scientific.classList.toggle("show", sciOpen);
-});
+/* MODO CIENTÍFICO */
+toggleSci.onclick = () => {
+  scientific.classList.toggle("show");
+};
 
-/* ======================
-   TEMAS (FIX DEFINITIVO)
-====================== */
+/* TEMAS */
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme) {
   document.body.className = savedTheme;
   themeSelect.value = savedTheme;
 }
 
-themeSelect.addEventListener("change", () => {
+themeSelect.onchange = () => {
   document.body.className = themeSelect.value;
   localStorage.setItem("theme", themeSelect.value);
-});
+};
 
-/* ======================
-   HISTORIAL
-====================== */
+/* HISTORIAL */
 function renderHistory() {
   historyDiv.innerHTML = "";
-
-  history.forEach((item, index) => {
+  history.forEach((item, i) => {
     const row = document.createElement("div");
     row.className = "history-row";
-
-    const text = document.createElement("span");
-    text.textContent = item;
-
-    const del = document.createElement("button");
-    del.textContent = "✖";
-    del.className = "history-delete";
-
-    del.addEventListener("click", () => {
-      history.splice(index, 1);
+    row.innerHTML = `<span>${item}</span><button class="history-delete">✖</button>`;
+    row.querySelector("button").onclick = () => {
+      history.splice(i, 1);
       saveHistory();
-    });
-
-    row.appendChild(text);
-    row.appendChild(del);
+    };
     historyDiv.appendChild(row);
   });
 }
-
 function saveHistory() {
   localStorage.setItem("history", JSON.stringify(history));
   renderHistory();
 }
-
 renderHistory();
 
-/* ======================
-   BOTONES (SOLO CALCULADORA)
-====================== */
-document
-  .querySelectorAll(".buttons button, .scientific button")
-  .forEach(btn => {
-    btn.addEventListener("click", () => {
-      handle(btn.textContent.trim());
-    });
-  });
+/* BOTONES */
+document.querySelectorAll(".buttons button, .scientific button")
+  .forEach(btn => btn.onclick = () => handle(btn.textContent));
 
-/* ======================
-   MANEJO DE BOTONES
-====================== */
 function handle(val) {
+  if (val === "AC") return reset();
+  if (val === "⌫") return back();
+  if (val === "=") return calculate();
+  if (val === "%") return addPercent();
 
-  if (val === "AC") {
-    expr = "";
-    display.textContent = "0";
-    preview.textContent = "";
-    return;
-  }
+  if (val === "π") expr += Math.PI;
+  else if (val === "e") expr += Math.E;
+  else if (["sin","cos","tan","log","ln"].includes(val)) expr += val + "(";
+  else if (val === "√") expr += "sqrt(";
+  else expr += val;
 
-  if (val === "⌫") {
-    expr = expr.slice(0, -1);
-    display.textContent = expr || "0";
-    livePreview();
-    return;
-  }
-
-  if (val === "=") {
-    calculate();
-    return;
-  }
-
-  if (val === "%") {
-    if (expr && !expr.endsWith("%")) {
-      expr += "%";
-      display.textContent = expr;
-      livePreview();
-    }
-    return;
-  }
-
-  if (val === "π") {
-    expr += Math.PI;
-  } else if (val === "e") {
-    expr += Math.E;
-  } else if (["sin", "cos", "tan", "log", "ln", "√"].includes(val)) {
-    expr += (val === "√" ? "sqrt(" : val + "(");
-  } else {
-    expr += val;
-  }
-
-  display.textContent = expr;
-  livePreview();
+  update();
 }
 
-/* ======================
-   CALCULAR
-====================== */
-function calculate() {
-  try {
-    const result = evaluate(expr);
-    history.push(`${expr} = ${result}`);
-    saveHistory();
-    expr = result.toString();
-    display.textContent = expr;
-    preview.textContent = "";
-  } catch {
-    display.textContent = "Error";
-  }
+function reset() {
+  expr = "";
+  display.textContent = "0";
+  preview.textContent = "";
 }
 
-/* ======================
-   PREVIEW EN VIVO
-====================== */
-function livePreview() {
+function back() {
+  expr = expr.slice(0,-1);
+  update();
+}
+
+function addPercent() {
+  if (!expr.endsWith("%")) expr += "%";
+  update();
+}
+
+function update() {
+  display.textContent = expr || "0";
   try {
     preview.textContent = "= " + evaluate(expr);
   } catch {
@@ -151,29 +89,32 @@ function livePreview() {
   }
 }
 
-/* ======================
-   EVALUADOR FINAL
-====================== */
+function calculate() {
+  try {
+    const res = evaluate(expr);
+    history.push(`${expr} = ${res}`);
+    saveHistory();
+    expr = res.toString();
+    update();
+    preview.textContent = "";
+  } catch {
+    display.textContent = "Error";
+  }
+}
+
 function evaluate(e) {
-
-  // A % B  → (A/100)*B
-  e = e.replace(
-    /(\d+\.?\d*)\s*%\s*(\d+\.?\d*)/g,
-    "($1/100)*$2"
-  );
-
-  // porcentaje simple (10%)
+  e = e.replace(/(\d+\.?\d*)\s*%\s*(\d+\.?\d*)/g, "($1/100)*$2");
   e = e.replace(/(\d+\.?\d*)%/g, "($1/100)");
 
   return Function("return " +
-    e.replace(/×/g, "*")
-     .replace(/÷/g, "/")
-     .replace(/−/g, "-")
-     .replace(/sqrt/g, "Math.sqrt")
-     .replace(/sin/g, "Math.sin")
-     .replace(/cos/g, "Math.cos")
-     .replace(/tan/g, "Math.tan")
-     .replace(/ln/g, "Math.log")
-     .replace(/log/g, "Math.log10")
+    e.replace(/×/g,"*")
+     .replace(/÷/g,"/")
+     .replace(/−/g,"-")
+     .replace(/sqrt/g,"Math.sqrt")
+     .replace(/sin/g,"Math.sin")
+     .replace(/cos/g,"Math.cos")
+     .replace(/tan/g,"Math.tan")
+     .replace(/ln/g,"Math.log")
+     .replace(/log/g,"Math.log10")
   )();
-                           }
+}
